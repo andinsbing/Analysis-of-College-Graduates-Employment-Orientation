@@ -115,8 +115,6 @@ urls = [
     # 'https://www.lagou.com/zhaopin/shishigongchengshi/',
     # 'https://www.lagou.com/zhaopin/shouqiangongchengshi/',
     # 'https://www.lagou.com/zhaopin/shouhougongchengshi/',
-
-    #
     # 'https://www.lagou.com/zhaopin/bigongchengshi/',
     # 'https://www.lagou.com/zhaopin/qiyeruanjianqita/',
     # 'https://www.lagou.com/zhaopin/chanpinjingli1/',
@@ -138,10 +136,7 @@ urls = [
     # 'https://www.lagou.com/zhaopin/wangyeshejishi/',
     # 'https://www.lagou.com/zhaopin/Flashshejishi/',
     # 'https://www.lagou.com/zhaopin/APPshejishi/',
-
-
-
-    # 'https://www.lagou.com/zhaopin/UIshejishi/',
+	# 'https://www.lagou.com/zhaopin/UIshejishi/',
     # 'https://www.lagou.com/zhaopin/pingmianshejishi/',
     # 'https://www.lagou.com/zhaopin/meishushejishi%EF%BC%882D3D%EF%BC%89/',
     # 'https://www.lagou.com/zhaopin/guanggaoshejishi/',
@@ -165,9 +160,7 @@ urls = [
     # 'https://www.lagou.com/zhaopin/shijueshejizongjian/',
     # 'https://www.lagou.com/zhaopin/jiaohushejijinglizhuguan/',
     # 'https://www.lagou.com/zhaopin/jiaohushejizongjian/',
-
-
-    # 'https://www.lagou.com/zhaopin/yonghuyanjiujinglizhuguan/',
+	# 'https://www.lagou.com/zhaopin/yonghuyanjiujinglizhuguan/',
     # 'https://www.lagou.com/zhaopin/yonghuyanjiuzongjian/',
     # 'https://www.lagou.com/zhaopin/yonghuyunying/',
     # 'https://www.lagou.com/zhaopin/chanpinyunying/',
@@ -230,8 +223,6 @@ urls = [
     # 'https://www.lagou.com/zhaopin/fenxishi/',
     # 'https://www.lagou.com/zhaopin/touziguwen/',
     # 'https://www.lagou.com/zhaopin/touzijingli/',
-    #
-
     # 'https://www.lagou.com/zhaopin/shichangzongjian/',
     # 'https://www.lagou.com/zhaopin/xiaoshouzongjian/',
     # 'https://www.lagou.com/zhaopin/shangwuzongjian/',
@@ -264,16 +255,12 @@ urls = [
     # 'https://www.lagou.com/zhaopin/zhuanli/',
     # 'https://www.lagou.com/zhaopin/xingzhengzongjianjingli/',
     # 'https://www.lagou.com/zhaopin/caiwuzongjianjingli/',
-    #
-    #
-    # 'https://www.lagou.com/zhaopin/HRDHRM/',
+	# 'https://www.lagou.com/zhaopin/HRDHRM/',
     # 'https://www.lagou.com/zhaopin/CFO/',
     # 'https://www.lagou.com/zhaopin/ceo/',
     # 'https://www.lagou.com/zhaopin/jinrongtouzijingli/',
     # 'https://www.lagou.com/zhaopin/jinrongfenxishi/',
     # 'https://www.lagou.com/zhaopin/touzizhuli/'
-
-    # 阿里云服务器
     # 'https://www.lagou.com/zhaopin/rongzi/',
     # 'https://www.lagou.com/zhaopin/binggou/',
     # 'https://www.lagou.com/zhaopin/hangyeyanjiu/',
@@ -302,7 +289,6 @@ for url in urls:
     pages = int(drive.find_element_by_class_name('totalNum').text)
     for i in range(1, pages + 1):  # 翻页获取href
         drive.get(url + str(i))
-        time.sleep(0.1)
         li = drive.find_elements(By.CLASS_NAME, 'position_link')
         for j in li:
             href = j.get_attribute('href')
@@ -311,14 +297,12 @@ for url in urls:
     for each in hrefs:
         try:
             drive.get(each)
-            time.sleep(0.1)
             f.write(drive.find_element_by_class_name('position-content-l').text)
             f.write(drive.find_element_by_class_name('job_detail').text)
             f.write('\n-------------------------------------------------\n')
         except:
             time.sleep(10)
             drive.get(each)
-            time.sleep(1)
             f.write(drive.find_element_by_class_name('position-content-l').text)
             f.write(drive.find_element_by_class_name('job_detail').text)
             f.write('\n-------------------------------------------------\n')
