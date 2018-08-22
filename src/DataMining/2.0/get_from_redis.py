@@ -5,11 +5,11 @@ import time
 
 
 def save_error_image(driver):
-    # print(driver.save_screenshot(
-    #     (time.ctime(time.time())).replace(' ', '_') + '.png'))
+    print(driver.save_screenshot(
+        (time.ctime(time.time())).replace(' ', '_').replace(':','-') + '.png'))
 
     # win下无法截屏？
-    print(driver.save_screenshot('D:\\fuck.png'))
+    # print(driver.save_screenshot('./2.0/fuck.png'))
 
 
 def get_from_redis():
