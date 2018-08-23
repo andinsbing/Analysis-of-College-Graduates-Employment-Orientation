@@ -1,0 +1,6 @@
+{
+    "git.ignoreLimitWarning": true,
+    "files.associations": {
+        "stdio.h": "c"
+    }
+}
