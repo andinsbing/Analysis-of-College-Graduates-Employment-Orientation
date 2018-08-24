@@ -2,14 +2,34 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from redis import Redis
 import time
+import sys
+
+# 截屏还需要测试
 
 
 def save_error_image(driver):
     print(driver.save_screenshot(
-        (time.ctime(time.time())).replace(' ', '_').replace(':','-') + '.png'))
+        (time.ctime(time.time())).replace(' ', '_').replace(':', '-') + '.png'))
 
     # win下无法截屏？
     # print(driver.save_screenshot('./2.0/fuck.png'))
+
+# 针对不同的操作系统生成driver
+
+
+def get_driver():
+    if(sys.platform == 'win32'):
+        return webdriver.Chrome()
+    else:
+        # 在Linux下运行Chrome下要求附加
+        from selenium.webdriver.chrome.options import Options
+        options = Options()
+        options.add_argument('--headless')
+        options.add_argument('--no-sandbox')
+        options.add_argument('--disable-dev-shm-usage')
+        driver = webdriver.Chrome(
+            executable_path="/usr/bin/chromedriver", chrome_options=options)
+        return driver
 
 
 def get_from_redis():
@@ -17,16 +37,7 @@ def get_from_redis():
     r = Redis(host='47.100.11.75', port=6388, db=0, password='redisredis')
     print(r.keys('*'))
 
-    # 在Linux下运行Chrome下要求附加
-
-    #options = Options()
-    # options.add_argument('--headless')
-    # options.add_argument('--no-sandbox')
-    # options.add_argument('--disable-dev-shm-usage')
-    # driver =
-    # webdriver.Chrome(executable_path="/usr/bin/chromedriver",chrome_options=options)
-
-    driver = webdriver.Chrome()
+    driver = get_driver()
 
     while True:
         next = r.lpop('tasks')
