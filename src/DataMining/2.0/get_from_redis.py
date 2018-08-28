@@ -3,16 +3,23 @@ from selenium.webdriver.common.by import By
 from redis import Redis
 import time
 import sys
+import os
 
-# 截屏还需要测试
+# 得到截屏的保存路径
+
+
+def get_save_path():
+    path = time.ctime(time.time()).replace(' ', '_').replace(':', '-') + '.png'
+    if(os.path.exists('error_images')):
+        pass
+    else:
+        os.mkdir('error_images')
+    path = './error_images/'+path
+    return path
 
 
 def save_error_image(driver):
-    print(driver.save_screenshot(
-        (time.ctime(time.time())).replace(' ', '_').replace(':', '-') + '.png'))
-
-    # win下无法截屏？
-    # print(driver.save_screenshot('./2.0/fuck.png'))
+    print(driver.save_screenshot(get_save_path()))
 
 # 针对不同的操作系统生成driver
 
@@ -52,8 +59,7 @@ def get_from_redis():
                 f.write('\n$thisisaseprator$\n')
             except:
                 # 截个屏看看
-                driver.save_screenshot(
-                    (time.ctime(time.time())).replace(' ', '_') + '.png')
+                save_error_image(driver)
         else:
             break
     f.close()
@@ -61,7 +67,7 @@ def get_from_redis():
 
 
 if __name__ == '__main__':
-    driver = webdriver.Chrome()
+    driver = get_driver()
     driver.get('https://www.baidu.com')
     save_error_image(driver)
     driver.close()

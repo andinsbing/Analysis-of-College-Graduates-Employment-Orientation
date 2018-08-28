@@ -21,7 +21,7 @@ apt-get -y install xfonts-cyrillic xfonts-100dpi xfonts-75dpi xfonts-base xfonts
 apt-get -y install imagemagick x11-apps
 Xvfb -ac :99 -screen 0 1280x1024x16 & export DISPLAY=:99
 
-apt install redis-server -y
+apt install redis-server -y 
 
 echo "everything is OK!"
 exit 0
