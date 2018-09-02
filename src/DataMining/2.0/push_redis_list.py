@@ -34,9 +34,11 @@ def get_hrefs(tasks):
                         href = j.get_attribute('href')
                         print(href)
                         hrefs.append(href + ' ' + job_type)
-                except:
+                except Exception as e:
+                    print(e)
                     save_error_image(driver)
-        except:
+        except Exception as e:
+            print(e)
             save_error_image(driver)
     driver.close()
     return hrefs
