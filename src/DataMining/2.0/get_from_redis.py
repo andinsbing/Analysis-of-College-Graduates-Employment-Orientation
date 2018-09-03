@@ -1,6 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from redis import Redis
+import multiprocessing
 import time
 import sys
 import os
@@ -39,9 +40,9 @@ def get_driver():
         return driver
 
 
-def get_from_redis():
-    f = open('data.txt', 'a', encoding='utf-8')
-    r = Redis(host='47.100.11.75', port=6388, db=0, password='redisredis')
+def get_from_redis(i):
+    f = open('data_'+str(i)+'.txt', 'a', encoding='utf-8')
+    r = Redis(host='47.100.11.75', port=6388, db=0, password='你的密码'')
     print(r.keys('*'))
 
     driver = get_driver()
@@ -65,9 +66,17 @@ def get_from_redis():
     f.close()
     driver.close()
 
+# 多进程
+
+
+def multi_get():
+    # 进程池
+    p = multiprocessing.Pool(multiprocessing.cpu_count())
+    for i in range(multiprocessing.cpu_count()):
+        p.apply_async(get_from_redis, args=(i,))
+    p.close()
+    p.join()
+
 
 if __name__ == '__main__':
-    driver = get_driver()
-    driver.get('https://www.baidu.com')
-    save_error_image(driver)
-    driver.close()
+    multi_get()
