@@ -5,13 +5,13 @@ import time
 from get_from_redis import get_driver
 from get_from_redis import save_error_image
 
-
 def get_task_urls(txt_path):
     f = open(txt_path)
     lists = []
     for url in f.readlines():
         url = url.strip()
-        lists.append(url)
+        # this different
+        lists.append(url[1:-2])
     f.close()
     return lists
 
@@ -26,7 +26,7 @@ def get_hrefs(tasks):
         try:
             driver.get(task)
             pages = int(driver.find_element_by_class_name('totalNum').text)
-            for i in range(1, min(pages + 1, 3)):  # 翻页获取href
+            for i in range(1, min(pages + 1, 15)):  # 翻页获取href
                 try:
                     driver.get(task + str(i))
                     li = driver.find_elements(By.CLASS_NAME, 'position_link')
@@ -58,4 +58,4 @@ def push_redis_list(txt_path):
 
 
 if __name__ == '__main__':
-    push_redis_list('tasks.txt')
+    push_redis_list('target.txt')

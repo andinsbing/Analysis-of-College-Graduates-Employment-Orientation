@@ -20,7 +20,8 @@ def get_save_path():
 
 
 def save_error_image(driver):
-    print(driver.save_screenshot(get_save_path()))
+    if not driver.save_screenshot(get_save_path()):
+        print('Canot Save images!!')
 
 # 针对不同的操作系统生成driver
 
@@ -42,7 +43,7 @@ def get_driver():
 
 def get_from_redis(i):
     f = open('data_'+str(i)+'.txt', 'a', encoding='utf-8')
-    r = Redis(host='47.100.11.75', port=6388, db=0, password='你的密码'')
+    r = Redis(host='47.100.11.75', port=6388, db=0, password='你的密码')
     print(r.keys('*'))
 
     driver = get_driver()
