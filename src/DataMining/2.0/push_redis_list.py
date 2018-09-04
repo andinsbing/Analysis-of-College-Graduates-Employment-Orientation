@@ -7,13 +7,11 @@ from get_from_redis import save_error_image
 
 def get_task_urls(txt_path):
     f = open(txt_path)
-    lists = []
     for url in f.readlines():
         url = url.strip()
         # this different
-        lists.append(url[1:-2])
+        yield url[1:-2]
     f.close()
-    return lists
 
 
 def get_hrefs(tasks):
@@ -52,6 +50,8 @@ def push_redis_list(txt_path):
     print('Get Tasks OK!')
     hrefs = get_hrefs(tasks)
     print('Get hrefs OK!')
+    # 需要去重
+    # TODO
     for each in hrefs:
         r.rpush('tasks', each)
     print('Push Redis list Success!')
