@@ -4,6 +4,7 @@ from redis import Redis
 import time
 from get_from_redis import get_driver
 from get_from_redis import save_error_image
+from selenium.common.exceptions import NoSuchElementException
 
 
 def get_hrefs():
@@ -16,6 +17,13 @@ def get_hrefs():
             job_type = r_type[30:-1]
             try:
                 driver.get(r_type)
+                try:
+                    driver.find_element_by_class_name('totalNum')
+                except NoSuchElementException as e:
+                    # 多进程爬取下验证
+                    time.sleep(40)
+                finally:
+                    driver.get(r_type)
                 pages = int(driver.find_element_by_class_name('totalNum').text)
                 for i in range(1, min(pages + 1, 15)):  # 翻页获取href
                     try:
