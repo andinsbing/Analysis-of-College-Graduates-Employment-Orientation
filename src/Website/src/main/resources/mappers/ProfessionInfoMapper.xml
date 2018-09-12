@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sicau.profession.dao.ProfessionInfoDao">
+
+
+  <select id="method1" resultType="map">
+      SELECT * FROM 会计 LIMIT 10
+  </select>
+
+
+
+    <select id="getJobExperiences" resultType="String" parameterType="String">
+        SELECT DISTINCT 经验要求 FROM ${jobName}
+    </select>
+
+    <select id="getJobCities" resultType="String" parameterType="String">
+        SELECT DISTINCT 城市 FROM ${jobName}
+    </select>
+
+
+    <select id="getProfessions" resultType="map" parameterType="map">
+        SELECT * FROM ${jobName}
+        <if test="jobExperience != null and jobCity == null">
+            where 经验要求 = #{jobExperience}
+        </if>
+        <if test="jobExperience != null and jobCity != null">
+            where 经验要求 = #{jobExperience} and 城市 = #{jobCity}
+        </if>
+        <if test="jobExperience == null and jobCity != null">
+            where 城市 = #{jobCity}
+        </if>
+    </select>
+
+
+    <select id="getSalaryTop10" resultType="map" parameterType="String">
+        SELECT 城市,  FORMAT(SUM(REPLACE (SUBSTRING_INDEX (工资,'-',1),'k','')+REPLACE (SUBSTRING_INDEX (工资,'-',-1),'k',''))*1000/(2*COUNT(*)),0) AS 平均工资 FROM ${jobName}  GROUP BY 城市 ORDER BY SUM(REPLACE (SUBSTRING_INDEX (工资,'-',1),'k','')+REPLACE (SUBSTRING_INDEX (工资,'-',-1),'k',''))*1000/(2*COUNT(*)) DESC LIMIT 10
+    </select>
+
+    <select id="getDemandTop10" resultType="map" parameterType="String">
+          SELECT 城市, COUNT(*) AS 数量 FROM ${jobName} GROUP BY 城市 ORDER BY COUNT(*) DESC LIMIT 10
+    </select>
+
+    <select id="getJobInfo" resultType="map" parameterType="map">
+        SELECT * FROM ${jobName} WHERE ID = #{id}
+    </select>
+
+    <select id="otherDbTest" resultType="map">
+        SELECT * FROM finalData.专利 LIMIT 1
+    </select>
+
+    <select id="getAbilities" resultType="String">
+        SELECT 名称 FROM analysisResults.专利
+    </select>
+
+    <select id="getCities" resultType="String">
+        SELECT  DISTINCT 城市 FROM prediction.Resultsalary
+    </select>
+
+    <select id="getJobs" resultType="String">
+        SELECT  DISTINCT 职位 FROM prediction.Resultsalary
+    </select>
+
+    <select id="getAllCityAveSalary" resultType="map" parameterType="map">
+        SELECT 城市,  FORMAT(SUM(REPLACE (SUBSTRING_INDEX (工资,'-',1),'k','')+REPLACE (SUBSTRING_INDEX (工资,'-',-1),'k',''))*1000/(2*COUNT(*)),0) AS 平均工资 FROM ${jobName}  GROUP BY 城市
+    </select>
+
+    <select id="getAbilityAnalyze" resultType="map" parameterType="map">
+        select 名称,相对比率 FROM  analysisResults.${jobName}
+    </select>
+
+    <select id="getPredictExperiences" resultType="String" parameterType="String">
+        SELECT DISTINCT 经验 FROM prediction.Resultsalary  WHERE 职位 = #{jobName}
+    </select>
+
+    <select id="getPredictInfo" resultType="map" parameterType="map">
+        SELECT DISTINCT 城市,预测最低工资,预测最高工资 FROM prediction.Resultsalary  WHERE 职位 = #{jobName} AND 经验 = #{experience}
+    </select>
+
+    <select id="getSalaryPercent" resultType="map" parameterType="map">
+
+        SELECT '5000以下' AS 工资情况 ,FORMAT(COUNT(*)*100/(SELECT COUNT(*) FROM ${jobName}),2) AS 比例 FROM (SELECT  (REPLACE(SUBSTRING_INDEX (工资,'-',1),'k','')+REPLACE(SUBSTRING_INDEX (工资,'-',-1),'k',''))*1000/2 AS 预计工资 FROM ${jobName} ) t2 WHERE 预计工资 &lt;5000
+
+        UNION ALL
+
+        SELECT '5000-7000' ,FORMAT(COUNT(*)*100/(SELECT COUNT(*) FROM ${jobName}  ),2) FROM (SELECT  (REPLACE(SUBSTRING_INDEX (工资,'-',1),'k','')+REPLACE(SUBSTRING_INDEX (工资,'-',-1),'k',''))*1000/2 AS 预计工资 FROM ${jobName} ) t2 WHERE 预计工资 >= 5000  AND 预计工资 &lt; 7000
+
+        UNION ALL
+
+        SELECT '7000-10000' ,FORMAT(COUNT(*)*100/(SELECT COUNT(*) FROM ${jobName}  ),2)  FROM (SELECT  (REPLACE(SUBSTRING_INDEX (工资,'-',1),'k','')+REPLACE(SUBSTRING_INDEX (工资,'-',-1),'k',''))*1000/2 AS 预计工资 FROM ${jobName} ) t2 WHERE 预计工资 >= 7000  AND 预计工资 &lt; 10000
+
+        UNION ALL
+
+        SELECT '10000以上' ,FORMAT(COUNT(*)*100/(SELECT COUNT(*) FROM ${jobName}),2)  FROM (SELECT  (REPLACE(SUBSTRING_INDEX (工资,'-',1),'k','')+REPLACE(SUBSTRING_INDEX (工资,'-',-1),'k',''))*1000/2 AS 预计工资 FROM ${jobName}  ) t2 WHERE 预计工资 >= 10000
+    </select>
+
+    <select id="getExpPercent" resultType="map" parameterType="map">
+        SELECT 经验要求,FORMAT(COUNT(*)*100/(SELECT COUNT(*) FROM ${jobName} ),2) AS 比例 FROM ${jobName}  GROUP BY 经验要求 ORDER BY COUNT(*)*100/(SELECT COUNT(*) FROM ${jobName} ) DESC
+    </select>
+
+    <select id="getRecordCount" parameterType="map" resultType="map">
+        SELECT COUNT(DISTINCT  城市) AS 城市数量 ,COUNT(*) AS 记录总数 FROM ${jobName}
+    </select>
+
+    <select id="getSalaryPercent2" resultType="map" parameterType="map">
+
+        SELECT '5000以下' AS 工资情况 ,FORMAT(COUNT(*)*100/(SELECT COUNT(*) FROM ${jobName}  where 城市=#{city} and 经验要求=#{exp}),2) AS 比例 FROM (SELECT  (REPLACE(SUBSTRING_INDEX (工资,'-',1),'k','')+REPLACE(SUBSTRING_INDEX (工资,'-',-1),'k',''))*1000/2 AS 预计工资 FROM ${jobName} where 城市=#{city} and 经验要求=#{exp}) t2 WHERE 预计工资 &lt;5000
+
+        UNION ALL
+
+        SELECT '5000-7000' ,FORMAT(COUNT(*)*100/(SELECT COUNT(*) FROM ${jobName}   where 城市=#{city} and 经验要求=#{exp}),2) FROM (SELECT  (REPLACE(SUBSTRING_INDEX (工资,'-',1),'k','')+REPLACE(SUBSTRING_INDEX (工资,'-',-1),'k',''))*1000/2 AS 预计工资 FROM ${jobName}  where 城市=#{city} and 经验要求=#{exp}) t2 WHERE 预计工资 >= 5000  AND 预计工资 &lt; 7000
+
+        UNION ALL
+
+        SELECT '7000-10000' ,FORMAT(COUNT(*)*100/(SELECT COUNT(*) FROM ${jobName}   where 城市=#{city} and 经验要求=#{exp}),2)  FROM (SELECT  (REPLACE(SUBSTRING_INDEX (工资,'-',1),'k','')+REPLACE(SUBSTRING_INDEX (工资,'-',-1),'k',''))*1000/2 AS 预计工资 FROM ${jobName}  where 城市=#{city} and 经验要求=#{exp}) t2 WHERE 预计工资 >= 7000  AND 预计工资 &lt; 10000
+
+        UNION ALL
+
+        SELECT '10000以上' ,FORMAT(COUNT(*)*100/(SELECT COUNT(*) FROM ${jobName}  where 城市=#{city} and 经验要求=#{exp}),2)  FROM (SELECT  (REPLACE(SUBSTRING_INDEX (工资,'-',1),'k','')+REPLACE(SUBSTRING_INDEX (工资,'-',-1),'k',''))*1000/2 AS 预计工资 FROM ${jobName}   where 城市=#{city} and 经验要求=#{exp}) t2 WHERE 预计工资 >= 10000
+    </select>
+
+    <select id="getPredictInfo2" resultType="map" parameterType="map">
+        SELECT DISTINCT 预测最低工资,预测最高工资 FROM prediction.Resultsalary  WHERE 职位 = #{jobName} AND 经验 = #{exp} and 城市 = #{city} limit 1
+    </select>
+
+
+    <select id="getRelateJob" resultType="map" parameterType="String">
+        SELECT * FROM (SELECT * FROM prediction.classification WHERE 职业类别 IN (SELECT 职业类别 FROM prediction.classification WHERE 职业名称 = #{jobName}) ) t1 WHERE ID >= (SELECT FLOOR(RAND() * (SELECT MAX(ID) FROM (SELECT * FROM prediction.classification WHERE 职业类别 IN (SELECT 职业类别 FROM prediction.classification WHERE 职业名称 = #{jobName}) ) t1))) ORDER BY ID LIMIT 0,5
+    </select>
+</mapper>
